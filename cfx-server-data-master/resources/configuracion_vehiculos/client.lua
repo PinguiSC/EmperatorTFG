@@ -1,14 +1,3 @@
-------------------------------------------
---	iEnsomatic RealisticVehicleFailure  --
-------------------------------------------
---
---	Created by Jens Sandalgaard
---	
---	This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
---
---	https://github.com/iEns/RealisticVehicleFailure
---
-
 local deformationMultiplier = 10.0				-- How much should the vehicle visually deform from a collision. Range 0.0 to 10.0 Where 0.0 is no deformation and 10.0 is 10x deformation. -1 = Don't touch
 local weaponsDamageMultiplier = 0.01			-- How much damage should the vehicle get from weapons fire. Range 0.0 to 10.0, where 0.0 is no damage and 10.0 is 10x damage. -1 = don't touch
 local damageFactorEngine = 10.0					-- Sane values are 1 to 100. Higher values means more damage to vehicle. A good starting point is 10
@@ -61,12 +50,12 @@ local fixMessageCount = 7
 local fixMessagePos = math.random(fixMessageCount)
 
 local noFixMessages = {
-	"You checked the oil plug. It's still there",
-	"You looked at your engine, it seemed fine",
-	"You made sure that the gaffer tape was still holding the engine together",
-	"You turned up the radio volume. It just drowned out the weird engine noises",
-	"You added rust-preventer to the spark tube. It made no difference",
-	"Never fix something that ain't broken they said. You didn't listen. At least it didn't get worse"
+	"Revisaste el tapón de aceite. Todavía está ahí",
+	"Miraste tu motor, parecía estar bien",
+	"Te aseguraste de que la cinta adhesiva todavía sujetaba el motor",
+	"Subiste el volumen de la radio. Simplemente ahogó los ruidos extraños del motor",
+	"Agregaste un producto anticorrosivo al tubo de chispa. No hizo ninguna diferencia",
+	"Nunca arreglen algo que no esté roto, dijeron. No escuchaste. Al menos no empeoró"
 }
 local noFixMessageCount = 6
 local noFixMessagePos = math.random(noFixMessageCount)
@@ -92,7 +81,7 @@ local healthPetrolTankNew = 1000.0
 local healthPetrolTankDelta = 0.0
 local healthPetrolTankDeltaScaled = 0.0
 
--- Display blips on map
+-- Ver marcas en el mapa
 Citizen.CreateThread(function()
 	if (displayBlips == true) then
 	  for _, item in pairs(mechanics) do
@@ -217,27 +206,23 @@ Citizen.CreateThread(function()
 				SetVehicleUndriveable(vehicle,true)
 			end
 
-			-- If ped spawned a new vehicle while in a vehicle or teleported from one vehicle to another, handle as if we just entered the car
-			if vehicle ~= lastVehicle then
-				pedInVehicleLast = false
-			end
-
 
 			if pedInVehicleLast == true then
-				-- Damage happened while in the car, can be multiplied
+				-- El daño ocurrió mientras estaba en el automóvil, se puede multiplicar
 
-				-- Only do calculations if any damage is present on the car. Prevents weird behavior when fixing using trainer or other script
+				-- Solo haga cálculos si hay algún daño presente en el automóvil. Previene comportamientos extraños al arreglar usando el fix u otro script
+
 				if healthEngineCurrent ~= 1000.0 or healthBodyCurrent ~= 1000.0 or healthPetrolTankCurrent ~= 1000.0 then
 
-					-- Combine the delta values
+					-- Combina los valores delta
 					local healthEngineCombinedDelta = math.max(healthEngineDeltaScaled, healthBodyDeltaScaled, healthPetrolTankDeltaScaled)
 
-					-- If huge damage, scale back a bit
+					-- Si hay un daño enorme, reduzca un poco
 					if healthEngineCombinedDelta > (healthEngineCurrent - engineSafeGuard) then
 						healthEngineCombinedDelta = healthEngineCombinedDelta * 0.7
 					end
 
-					-- If complete damage, but not catastrophic (ie. explosion territory) pull back a bit, to give a couple of seconds og engine runtime before dying
+					-- Si el daño es completo, pero no catastrófico (es decir, territorio de explosión), retroceda un poco, para dar un par de segundos de tiempo de funcionamiento del motor antes de morir.
 					if healthEngineCombinedDelta > healthEngineCurrent then
 						healthEngineCombinedDelta = healthEngineCurrent - (cascadingFailureThreshold / 5)
 					end
@@ -249,7 +234,7 @@ Citizen.CreateThread(function()
 					healthEngineNew = healthEngineLast - healthEngineCombinedDelta
 
 
-					------- CONTROL DE DAÑ_OS
+					------- CONTROL DE DANYOS
 
 					-- Si esta un poco dañazo el vehiculo va bajando muy lentamente la salud.
 
@@ -272,38 +257,38 @@ Citizen.CreateThread(function()
 						healthPetrolTankNew = 750.0
 					end
 
-					-- Prevent negative body damage.
+					-- Previene daños del vehiculo negativos. (evita explosiones del mismo)
 					if healthBodyNew < 0  then
 						healthBodyNew = 0.0
 					end
 				end
 			else
-				-- Just got in the vehicle. Damage can not be multiplied this round
+				-- Acabo de subir al vehículo. El daño no se puede multiplicar esta ronda
 
-				-- Set vehicle handling data
+				-- Establecer datos de manejo del vehículo
 				if deformationMultiplier ~= -1 then SetVehicleHandlingFloat(vehicle, 'CHandlingData', 'fDeformationDamageMult', deformationMultiplier) end
 				if weaponsDamageMultiplier ~= -1 then SetVehicleHandlingFloat(vehicle, 'CHandlingData', 'fWeaponDamageMult', weaponsDamageMultiplier/damageFactorBody) end -- Set weaponsDamageMultiplier and compensate for damageFactorBody
 				
-				-- If body damage catastrophic, reset somewhat so we can get new damage to multiply
+				-- Si el daño del vehiculo es total, lo reinicia un poco para que podamos multiplicar el daño.
 				if healthBodyCurrent < cascadingFailureThreshold then
 					healthBodyNew = cascadingFailureThreshold
 				end
 				pedInVehicleLast = true
 			end
 
-			-- set the actual new values
+			-- establece los nuevos valores reales
 			if healthEngineNew ~= healthEngineCurrent then SetVehicleEngineHealth(vehicle, healthEngineNew) end
 			if healthBodyNew ~= healthBodyCurrent then SetVehicleBodyHealth(vehicle, healthBodyNew) end
 			if healthPetrolTankNew ~= healthPetrolTankCurrent then SetVehiclePetrolTankHealth(vehicle, healthPetrolTankNew) end
 
-			-- Store current values, so we can calculate delta next time around
+			-- Almacena los valores actuales, para que podamos calcular delta la próxima vez
 			healthEngineLast = healthEngineNew
 			healthBodyLast = healthBodyNew
 			healthPetrolTankLast = healthPetrolTankNew
 			lastVehicle=vehicle
 		else
 			if pedInVehicleLast == true then
-				-- We just got out of the car
+				-- Acabamos de salir del auto
 				if weaponsDamageMultiplier ~= -1 then SetVehicleHandlingFloat(lastVehicle, 'CHandlingData', 'fWeaponDamageMult', weaponsDamageMultiplier) end	-- Since we are out of the vehicle, we should no longer compensate for bodyDamageFactor	
 			end
 			pedInVehicleLast = false
