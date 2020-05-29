@@ -1,17 +1,17 @@
-local deformationMultiplier = 10.0				-- How much should the vehicle visually deform from a collision. Range 0.0 to 10.0 Where 0.0 is no deformation and 10.0 is 10x deformation. -1 = Don't touch
-local weaponsDamageMultiplier = 0.01			-- How much damage should the vehicle get from weapons fire. Range 0.0 to 10.0, where 0.0 is no damage and 10.0 is 10x damage. -1 = don't touch
-local damageFactorEngine = 10.0					-- Sane values are 1 to 100. Higher values means more damage to vehicle. A good starting point is 10
-local damageFactorBody = 10.0					-- Sane values are 1 to 100. Higher values means more damage to vehicle. A good starting point is 10
-local damageFactorPetrolTank = 64.0				-- Sane values are 1 to 100. Higher values means more damage to vehicle. A good starting point is 64
-local cascadingFailureSpeedFactor = 8.0			-- Sane values are 1 to 100. When vehicle health drops below a certain point, cascading failure sets in, and the health drops rapidly until the vehicle dies. Higher values means faster failure. A good starting point is 8
-local degradingHealthSpeedFactor = 10			-- Speed of slowly degrading health, but not failure. Value of 10 means that it will take about 0.25 second per health point, so degradation from 800 to 305 will take about 2 minutes of clean driving.
-local degradingFailureThreshold = 800.0			-- Below this value, slow health degradation will set in
-local cascadingFailureThreshold = 360.0			-- Below this value, health cascading failure will set in
-local engineSafeGuard = 100.0					-- Final failure value. Set it too high, and the vehicle won't smoke when disabled. Set too low, and the car will catch fire from a single bullet to the engine. At health 100 a typical car can take 3-4 bullets to the engine before catching fire.
-local displayBlips = true						-- Show blips for mechanics locations
+local deformationMultiplier = 10.0				-- Cuanto debería deformarse visualmente el vehiculo de una colision. Rango 0.0 a 10.0 Donde 0.0 no es deformacion y 10.0 es 10x deformacion. -1 = no tocar
+local weaponsDamageMultiplier = 0.01			-- Cuánto daño debería recibir el vehículo del fuego de las armas. Rango 0.0 a 10.0, donde 0.0 no es daño y 10.0 es 10x daño. -1 = no tocar
+local damageFactorEngine = 10.0					-- Los valores correctos son de 1 a 100. Valores más altos significan más daño al vehículo. Un buen punto de partida es 10
+local damageFactorBody = 10.0					-- Los valores correctos son de 1 a 100. Valores más altos significan más daño al vehículo. Un buen punto de partida es 10
+local damageFactorPetrolTank = 64.0				-- Los valores correctos son de 1 a 100. Valores más altos significan más daño al vehículo. Un buen punto de partida es 64
+local cascadingFailureSpeedFactor = 8.0			-- Los valores correctos son de 1 a 100. Cuando la salud del vehículo cae por debajo de cierto punto, se establece una falla en cascada y la salud cae rápidamente hasta que el vehículo muere. Los valores más altos significan una falla más rápida. Un buen punto de partida es 8
+local degradingHealthSpeedFactor = 10			-- Velocidad de salud que se degrada lentamente, pero no falla. El valor de 10 significa que tomará aproximadamente 0.25 segundos por punto de salud, por lo que la degradación de 800 a 305 tomará aproximadamente 2 minutos de conducción limpia.
+local degradingFailureThreshold = 800.0			-- Por debajo de este valor, la degradación lenta de la salud se establecerá en
+local cascadingFailureThreshold = 360.0			-- Por debajo de este valor, se establecerá una falla de salud en cascada
+local engineSafeGuard = 100.0					-- Valor final de falla. Póngalo demasiado alto y el vehículo no fumará cuando esté desactivado. Si se ajusta demasiado bajo, el automóvil se incendiará desde una sola bala al motor. Con la salud 100, un automóvil típico puede llevar de 3 a 4 balas al motor antes de incendiarse.
+local displayBlips = true						-- Mostrar blips para ubicaciones de mecánicos
 
 
--- id=446 for wrench icon, id=72 for spraycan icon
+-- id=446 id=72
 local mechanics = {
 	{name="Mechanic", id=446, r=25.0, x=-337.0,  y=-135.0,  z=39.0},	-- LSC Burton
 	{name="Mechanic", id=446, r=25.0, x=-1155.0, y=-2007.0, z=13.0},	-- LSC by airport
